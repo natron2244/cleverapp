@@ -1,0 +1,48 @@
+version: '2'
+services:
+  api:
+    build: api/.
+    command: 'yarn run start-dev'
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - api/.env
+    ports:
+      - '8080:8080'
+      - '9229:9229'
+    expose:
+      - 9229
+    volumes:
+      - './api/.:/opt/app'
+      - /opt/app/node_modules
+    image: 'cleverapp_api:latest'
+  frontend:
+    build: frontend/.
+    command: 'npm start'
+    ports:
+      - '0.0.0.0:3000:3000'
+      - '0.0.0.0:3001:3001'
+      - '0.0.0.0:3002:3002'
+    volumes:
+      - './frontend/.:/opt/app'
+      - /opt/app/node_modules
+    image: 'cleverapp_frontend:latest'
+  db:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: pV6hfzO9~dxVLOeSPH11q
+      MYSQL_PASSWORD: ChMJFvRVm7AtWWfJTCVqj
+      MYSQL_DATABASE: cleverapp_local
+      MYSQL_USER: cleverapp
+    ports:
+      - '3306:3306'
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - '8081:8080'
+  redis:
+    build: docker/definitions/redis
+    image: 'cleverapp_redis:latest'
